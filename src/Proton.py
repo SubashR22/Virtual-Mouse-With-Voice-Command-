@@ -106,7 +106,7 @@ def respond(voice_data):
         url = 'https://google.com/search?q=' + voice_data.split('search')[1]
         try:
             webbrowser.get().open(url)
-            reply('This is what I found Sir')
+            reply('This is what I found')
         except:
             reply('Please check your Internet')
 
@@ -118,12 +118,12 @@ def respond(voice_data):
         url = 'https://google.nl/maps/place/' + temp_audio + '/&amp;'
         try:
             webbrowser.get().open(url)
-            reply('This is what I found Sir')
+            reply('This is what I found')
         except:
             reply('Please check your Internet')
 
     elif ('bye' in voice_data) or ('by' in voice_data):
-        reply("Good bye Sir! Have a nice day.")
+        reply("Good bye! Have a nice day.")
         is_awake = False
 
     elif ('exit' in voice_data) or ('terminate' in voice_data):
@@ -249,5 +249,6 @@ while True:
             print("EXCEPTION raised while closing.") 
             break
         
+
 
 

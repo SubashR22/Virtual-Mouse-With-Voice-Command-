@@ -51,27 +51,7 @@ class HandRecog:
     """
     
     def __init__(self, hand_label):
-        """
-        Constructs all the necessary attributes for the HandRecog object.
-
-        Parameters
-        ----------
-            finger : int
-                Represent gesture corresponding to Enum 'Gest',
-                stores computed gesture for current frame.
-            ori_gesture : int
-                Represent gesture corresponding to Enum 'Gest',
-                stores gesture being used.
-            prev_gesture : int
-                Represent gesture corresponding to Enum 'Gest',
-                stores gesture computed for previous frame.
-            frame_count : int
-                total no. of frames since 'ori_gesture' is updated.
-            hand_result : Object
-                Landmarks obtained from mediapipe.
-            hand_label : int
-                Represents multi-handedness corresponding to Enum 'HLabel'.
-        """
+       
 
         self.finger = 0
         self.ori_gesture = Gest.PALM
@@ -84,18 +64,7 @@ class HandRecog:
         self.hand_result = hand_result
 
     def get_signed_dist(self, point):
-        """
-        returns signed euclidean distance between 'point'.
-
-        Parameters
-        ----------
-        point : list contaning two elements of type list/tuple which represents 
-            landmark point.
         
-        Returns
-        -------
-        float
-        """
         sign = -1
         if self.hand_result.landmark[point[0]].y < self.hand_result.landmark[point[1]].y:
             sign = 1
@@ -105,36 +74,14 @@ class HandRecog:
         return dist*sign
     
     def get_dist(self, point):
-        """
-        returns euclidean distance between 'point'.
-
-        Parameters
-        ----------
-        point : list contaning two elements of type list/tuple which represents 
-            landmark point.
-        
-        Returns
-        -------
-        float
-        """
+      
         dist = (self.hand_result.landmark[point[0]].x - self.hand_result.landmark[point[1]].x)**2
         dist += (self.hand_result.landmark[point[0]].y - self.hand_result.landmark[point[1]].y)**2
         dist = math.sqrt(dist)
         return dist
     
     def get_dz(self,point):
-        """
-        returns absolute difference on z-axis between 'point'.
-
-        Parameters
-        ----------
-        point : list contaning two elements of type list/tuple which represents 
-            landmark point.
-        
-        Returns
-        -------
-        float
-        """
+       
         return abs(self.hand_result.landmark[point[0]].z - self.hand_result.landmark[point[1]].z)
     
     # Function to find Gesture Encoding using current finger_state.
@@ -162,7 +109,7 @@ class HandRecog:
             try:
                 ratio = round(dist/dist2,1)
             except:
-                ratio = round(dist1/0.01,1)
+                ratio = round(dist/0.01,1)
 
             self.finger = self.finger << 1
             if ratio > 0.5 :
@@ -171,15 +118,7 @@ class HandRecog:
 
     # Handling Fluctations due to noise
     def get_gesture(self):
-        """
-        returns int representing gesture corresponding to Enum 'Gest'.
-        sets 'frame_count', 'ori_gesture', 'prev_gesture', 
-        handles fluctations due to noise.
-        
-        Returns
-        -------
-        int
-        """
+      
         if self.hand_result == None:
             return Gest.PALM
 
@@ -219,47 +158,7 @@ class HandRecog:
 
 # Executes commands according to detected gestures
 class Controller:
-    """
-    Executes commands according to detected gestures.
-
-    Attributes
-    ----------
-    tx_old : int
-        previous mouse location x coordinate
-    ty_old : int
-        previous mouse location y coordinate
-    flag : bool
-        true if V gesture is detected
-    grabflag : bool
-        true if FIST gesture is detected
-    pinchmajorflag : bool
-        true if PINCH gesture is detected through MAJOR hand,
-        on x-axis 'Controller.changesystembrightness', 
-        on y-axis 'Controller.changesystemvolume'.
-    pinchminorflag : bool
-        true if PINCH gesture is detected through MINOR hand,
-        on x-axis 'Controller.scrollHorizontal', 
-        on y-axis 'Controller.scrollVertical'.
-    pinchstartxcoord : int
-        x coordinate of hand landmark when pinch gesture is started.
-    pinchstartycoord : int
-        y coordinate of hand landmark when pinch gesture is started.
-    pinchdirectionflag : bool
-        true if pinch gesture movment is along x-axis,
-        otherwise false
-    prevpinchlv : int
-        stores quantized magnitued of prev pinch gesture displacment, from 
-        starting position
-    pinchlv : int
-        stores quantized magnitued of pinch gesture displacment, from 
-        starting position
-    framecount : int
-        stores no. of frames since 'pinchlv' is updated.
-    prev_hand : tuple
-        stores (x, y) coordinates of hand in previous frame.
-    pinch_threshold : float
-        step size for quantization of 'pinchlv'.
-    """
+   
 
     tx_old = 0
     ty_old = 0
@@ -326,16 +225,7 @@ class Controller:
     # Locate Hand to get Cursor Position
     # Stabilize cursor by Dampening
     def get_position(hand_result):
-        """
-        returns coordinates of current hand position.
-
-        Locates hand to get cursor position also stabilize cursor by 
-        dampening jerky motion of hand.
-
-        Returns
-        -------
-        tuple(float, float)
-        """
+       
         point = 9
         position = [hand_result.landmark[point].x ,hand_result.landmark[point].y]
         sx,sy = pyautogui.size()
@@ -370,23 +260,7 @@ class Controller:
 
     # Hold final position for 5 frames to change status
     def pinch_control(hand_result, controlHorizontal, controlVertical):
-        """
-        calls 'controlHorizontal' or 'controlVertical' based on pinch flags, 
-        'framecount' and sets 'pinchlv'.
-
-        Parameters
-        ----------
-        hand_result : Object
-            Landmarks obtained from mediapipe.
-        controlHorizontal : callback function assosiated with horizontal
-            pinch gesture.
-        controlVertical : callback function assosiated with vertical
-            pinch gesture. 
-        
-        Returns
-        -------
-        None
-        """
+       
         if Controller.framecount == 5:
             Controller.framecount = 0
             Controller.pinchlv = Controller.prevpinchlv
@@ -475,29 +349,7 @@ class Controller:
 
 
 class GestureController:
-    """
-    Handles camera, obtain landmarks from mediapipe, entry point
-    for whole program.
-
-    Attributes
-    ----------
-    gc_mode : int
-        indicates weather gesture controller is running or not,
-        1 if running, otherwise 0.
-    cap : Object
-        object obtained from cv2, for capturing video frame.
-    CAM_HEIGHT : int
-        highet in pixels of obtained frame from camera.
-    CAM_WIDTH : int
-        width in pixels of obtained frame from camera.
-    hr_major : Object of 'HandRecog'
-        object representing major hand.
-    hr_minor : Object of 'HandRecog'
-        object representing minor hand.
-    dom_hand : bool
-        True if right hand is domaniant hand, otherwise False.
-        default True.
-    """
+   
     gc_mode = 0
     cap = None
     CAM_HEIGHT = None
@@ -514,11 +366,7 @@ class GestureController:
         GestureController.CAM_WIDTH = GestureController.cap.get(cv2.CAP_PROP_FRAME_WIDTH)
     
     def classify_hands(results):
-        """
-        sets 'hr_major', 'hr_minor' based on classification(left, right) of 
-        hand obtained from mediapipe, uses 'dom_hand' to decide major and
-        minor hand.
-        """
+        
         left , right = None,None
         try:
             handedness_dict = MessageToDict(results.multi_handedness[0])
@@ -546,11 +394,7 @@ class GestureController:
             GestureController.hr_minor = right
 
     def start(self):
-        """
-        Entry point of whole programm, caputres video frame and passes, obtains
-        landmark from mediapipe and passes it to 'handmajor' and 'handminor' for
-        controlling.
-        """
+       
         
         handmajor = HandRecog(HLabel.MAJOR)
         handminor = HandRecog(HLabel.MINOR)
@@ -596,5 +440,5 @@ class GestureController:
         cv2.destroyAllWindows()
 
 # uncomment to run directly
-# gc1 = GestureController()
-# gc1.start()
+#gc1 = GestureController()
+#gc1.start()
